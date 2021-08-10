@@ -1,22 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-CHOICES=[]
-
 class User(AbstractUser):
     pass
-
-class Category(models.Model):
-    pass
-
 class Title(models.Model):
-    name = models.CharField(max_length=200)
-    year = models.DateTimeField()
-    rating = models.FloatField()
-    description = models.TextField()
-    genre = models.CharField(max_length=200)
-    group = (models.ForeignKey(Category, on_delete=models.SET_NULL,
-             blank=True, null=True, related_name="titles"))
+    pass
 
 class Review(models.Model):
     text = models.TextField()
