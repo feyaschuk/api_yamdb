@@ -1,5 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
+class User(AbstractUser):
+    pass
 
 class Category(models.Model):
     title = models.CharField(max_length=200,
@@ -18,7 +21,7 @@ class Category(models.Model):
 class Genre(models.Model):
     titles = models.CharField(max_length=200,
                              help_text='Укажите жанр')
-    slug = models.SlugField(max_length=150, unique=True,
+    slug = models.SlugField(max_length=150, unique=True, blank=True, null=True,
                             verbose_name='Идентификатор жанра',)
 
     class Meta:
@@ -30,7 +33,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    title = models.CharField(max_length=200,)
+    name = models.CharField(max_length=200,)
     year = models.IntegerField(verbose_name="Год выпуска")
     description = models.CharField(max_length=200, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True,
@@ -44,3 +47,25 @@ class Title(models.Model):
 
     def __str__(self):
         return self.title[:15]
+
+class Review(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews')
+    score = models.OneToOneField(
+        Title, on_delete=models.CASCADE, related_name='reviews')
+    #score = models.ForeignKey(
+        #Title, on_delete=models.CASCADE, related_name='reviews')
+    title = models.ForeignKey(
+        Title, on_delete=models.CASCADE, blank=True, null=True, related_name='reviews_title')
+    pub_date = models.DateTimeField(
+        'Дата добавления', auto_now_add=True, db_index=True)
+
+class Comment(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments')
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name='comments')
+    pub_date = models.DateTimeField(
+        'Дата комментария', auto_now_add=True, db_index=True)
