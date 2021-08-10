@@ -14,6 +14,8 @@ class Review(models.Model):
         Title, on_delete=models.CASCADE, related_name='reviews')
     #score = models.ForeignKey(
         #Title, on_delete=models.CASCADE, related_name='reviews')
+    title = models.ForeignKey(
+        Title, on_delete=models.CASCADE, blank=True, null=True, related_name='reviews_title')
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
 

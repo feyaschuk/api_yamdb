@@ -16,7 +16,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    title = models.CharField(max_length=200,
+    titles = models.CharField(max_length=200,
                              help_text='Укажите жанр')
     slug = models.SlugField(max_length=150, unique=True,
                             verbose_name='Идентификатор жанра',)
@@ -33,10 +33,10 @@ class Title(models.Model):
     title = models.CharField(max_length=200,)
     year = models.IntegerField(verbose_name="Год выпуска")
     description = models.CharField(max_length=200, blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL,
-                                 related_name='title',
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True,
+                                 related_name='titles_category',
                                  verbose_name='Категория')
-    genre = models.ManyToManyField(Genre, verbose_name='Жанр', blank=True)
+    genres = models.ManyToManyField(Genre, verbose_name='Жанр', blank=True)
 
     class Meta:
         ordering = ('id',)
