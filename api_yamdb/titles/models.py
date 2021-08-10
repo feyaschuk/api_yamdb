@@ -23,7 +23,7 @@ class Genre(models.Model):
 
     class Meta:
         ordering = ('title',)
-        verbose_name_plural = 'Жанр'
+        verbose_name_plural = 'Жанр  '
 
     def __str__(self):
         return self.title
