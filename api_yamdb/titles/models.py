@@ -13,6 +13,10 @@ class User(AbstractUser):
         choices=USER_STATUSES,
         default=DEFAULT_USER
     )
+    email = models.EmailField(
+        max_length=150,
+        unique=True
+    )
 
 
 class Category(models.Model):
