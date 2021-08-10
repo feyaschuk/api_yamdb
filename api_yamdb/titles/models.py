@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    DEFAULT_USER = 'user'
+    DEFAULT_USER = 'user-custom'
     USER_STATUSES = [
         ('user', 'user'),
         ('moderator', 'moderator'),
