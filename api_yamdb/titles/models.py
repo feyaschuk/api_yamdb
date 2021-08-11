@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class User(AbstractUser):
@@ -73,8 +74,11 @@ class Review(models.Model):
         User, on_delete=models.CASCADE, related_name='reviews')
     score = models.OneToOneField(
         Title, on_delete=models.CASCADE, related_name='reviews')
-    #score = models.ForeignKey(
-        #Title, on_delete=models.CASCADE, related_name='reviews')
+    score = models.PositiveSmallIntegerField(
+        'Оценка',
+        validators=(MinValueValidator(1),
+                    MaxValueValidator(10))
+    )
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, blank=True, null=True, related_name='reviews_title')
     pub_date = models.DateTimeField(
