@@ -1,7 +1,12 @@
 from django.shortcuts import get_object_or_404
+<<<<<<< HEAD
 from titles.models import Comment, Review, User
 from titles.models import Title
 from django.db.models import Avg
+=======
+from reviews.models import Comment, Review, User
+from reviews.models import Title
+>>>>>>> development
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 
