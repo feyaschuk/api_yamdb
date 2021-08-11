@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
-from titles.models import Comment, Review, User
-from titles.models import Title
+from reviews.models import Comment, Review, User
+from reviews.models import Title
 from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
 
