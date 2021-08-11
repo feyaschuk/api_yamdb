@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
-from .models import Comment, Review, User
-from .models import Title
-from rest_framework import filters, mixins, permissions, viewsets
+from titles.models import Comment, Review, User
+from titles.models import Title
+from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
 
 from .serializers import (CommentSerializer, ReviewSerializer,UserSerializer)
@@ -20,8 +20,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         review = get_object_or_404(Review, pk=review_id)
         return review.comments.all()
     
-
-
 class CommentViewSet(viewsets.ModelViewSet):    
     serializer_class = CommentSerializer
 

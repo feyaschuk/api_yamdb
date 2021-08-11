@@ -1,9 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
-class User(AbstractUser):
-    pass
 
 class User(AbstractUser):
     DEFAULT_USER = 'user'
@@ -12,7 +9,7 @@ class User(AbstractUser):
         ('moderator', 'moderator'),
         ('admin', 'admin')
     ]
-    user_status = models.CharField(
+    user_status = models.CharField(max_length=150,
         choices=USER_STATUSES,
         default=DEFAULT_USER
     )
@@ -23,31 +20,31 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-    title = models.CharField(max_length=200,
+    name = models.CharField(max_length=200,
                              help_text='Укажите название категории')
     slug = models.SlugField(max_length=150, unique=True,
                             verbose_name='Идентификатор категории',)
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('name',)
         verbose_name_plural = 'Категория'
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Genre(models.Model):
-    titles = models.CharField(max_length=200,
+    name = models.CharField(max_length=200,
                              help_text='Укажите жанр')
     slug = models.SlugField(max_length=150, unique=True, blank=True, null=True,
                             verbose_name='Идентификатор жанра',)
 
     class Meta:
-        ordering = ('title',)
-        verbose_name_plural = 'Жанр  '
+        ordering = ('name',)
+        verbose_name_plural = 'Жанр'
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Title(models.Model):
@@ -57,14 +54,14 @@ class Title(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True,
                                  related_name='titles_category',
                                  verbose_name='Категория')
-    genres = models.ManyToManyField(Genre, verbose_name='Жанр', blank=True)
+    genre = models.ManyToManyField(Genre, verbose_name='Жанр', blank=True)
 
     class Meta:
         ordering = ('id',)
         verbose_name_plural = 'Название'
 
     def __str__(self):
-        return self.title[:15]
+        return self.name[:15]
 
 class Review(models.Model):
     text = models.TextField()
