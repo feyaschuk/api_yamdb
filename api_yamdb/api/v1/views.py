@@ -1,14 +1,16 @@
 from django.shortcuts import get_object_or_404
 from titles.models import Comment, Review, User
 from titles.models import Title
+from django.db.models import Avg
 from rest_framework import viewsets
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import PageNumberPagination
 
 from .serializers import (CommentSerializer, ReviewSerializer,UserSerializer)
 
 class ReviewViewSet(viewsets.ModelViewSet):    
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
+    pagination_class = PageNumberPagination
     
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs.get("titles_id"))
@@ -21,6 +23,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     
 class CommentViewSet(viewsets.ModelViewSet):    
     serializer_class = CommentSerializer
+    pagination_class = PageNumberPagination
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, pk=self.kwargs.get("review_id"))
@@ -35,4 +38,5 @@ class UserViewSet(viewsets.ModelViewSet):
     
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = PageNumberPagination
 
