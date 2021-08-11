@@ -16,7 +16,7 @@ SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-AUTH_USER_MODEL = 'titles.User'
+AUTH_USER_MODEL = 'reviews.User'
 
 # Application definition
 
@@ -28,9 +28,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework', 
-    'titles',
+    'reviews',
     'api',
-    'api.v1',
     
 ]
 
@@ -116,6 +115,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
-
-# Custom User model
-AUTH_USER_MODEL = 'titles.User'

@@ -1,4 +1,4 @@
-from titles.models import Comment, Review, User
+from reviews.models import Comment, Review, User
 from rest_framework import serializers
 
 
