@@ -1,10 +1,17 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
-from reviews.models import Comment, Review, User
-from reviews.models import Title
-from rest_framework import viewsets
+from rest_framework import viewsets, exceptions, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
-from .serializers import (CommentSerializer, ReviewSerializer,UserSerializer)
+
+from reviews.models import Comment, Review, User, Title
+from .serializers import (CommentSerializer, ReviewSerializer,
+                          CustomUserSerializer)
+from .message_creators import send_confirmation_code
+
 
 class ReviewViewSet(viewsets.ModelViewSet):    
     serializer_class = ReviewSerializer
@@ -18,7 +25,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get("titles_id")
         title = get_object_or_404(Title, pk=title_id)
         return Review.objects.filter(title=title)
-    
+
+
 class CommentViewSet(viewsets.ModelViewSet):    
     serializer_class = CommentSerializer
 
@@ -31,8 +39,20 @@ class CommentViewSet(viewsets.ModelViewSet):
         review = get_object_or_404(Review, pk=review_id)
         return review.comments.all()
 
+
 class UserViewSet(viewsets.ModelViewSet):
     
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = CustomUserSerializer
 
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_new_user(request):
+    serializer = CustomUserSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.save()
+    confirmation_code = default_token_generator.make_token(request.user)
+    send_confirmation_code(data=request.data, code=confirmation_code)
+    return Response(serializer.data, status=status.HTTP_200_OK)
