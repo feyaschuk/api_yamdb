@@ -1,5 +1,4 @@
-from reviews.models import (Comment, Review, User,
-                            Title, Genre, Category)
+from reviews.models import Comment, Review, Title, Genre, Category
 from rest_framework import serializers, validators
 
 
