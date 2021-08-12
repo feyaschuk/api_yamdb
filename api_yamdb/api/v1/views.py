@@ -22,15 +22,14 @@ from .permissions import IsOwnerOrReadOnly, IsAdminOnly, IsModeratorOrReadOnly
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]    
-    serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]    
+    serializer_class = ReviewSerializer    
     pagination_class = PageNumberPagination
     
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get("titles_id"))
-        serializer.save(title=title)
-        #serializer.save(author=self.request.user, title=title) добавить автора, когда User будет готов
+        return serializer.save(title=title)
+        #return serializer.save(author=self.request.user, title=title) добавить автора, когда User будет готов
 
     def get_queryset(self):
         title_id = self.kwargs.get("titles_id")
@@ -38,24 +37,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Review.objects.filter(title=title)
 
 class CommentViewSet(viewsets.ModelViewSet): 
-    #permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]  
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]      
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, id=self.kwargs.get("review_id"))
         return serializer.save(review=review)
-        #serializer.save(author=self.request.user, review=review) добавить автора, когда User будет готов
+        #return serializer.save(author=self.request.user, review=review) добавить автора, когда User будет готов
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
         review = get_object_or_404(Review, id=review_id)
         return review.comments.all()
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminOnly,]
-    queryset = User.objects.all()
 
 
 @api_view(['POST'])

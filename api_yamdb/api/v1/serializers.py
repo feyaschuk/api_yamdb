@@ -2,6 +2,7 @@
 from django.db.models.aggregates import Avg
 from reviews.models import Comment, Review, Title, Genre, Category
 from rest_framework import serializers, validators
+from rest_framework.relations import SlugRelatedField
 
 
 from django.contrib.auth import get_user_model
@@ -11,13 +12,15 @@ User = get_user_model()
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    
+    author = SlugRelatedField(slug_field='username', read_only=True)
+
     class Meta:
         fields = '__all__'
         model = Review
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = SlugRelatedField(slug_field='username', read_only=True)
     
     class Meta:
         fields = '__all__'
@@ -92,7 +95,7 @@ class TitleSerializer(serializers.ModelSerializer):
             
     def get_rating(self, obj):
         rating = Review.objects.values('title_id').annotate(rating=Avg('score'))[0]['rating']
-        return round(rating,1)
+        return round(rating, 1)
     
 
     class Meta:
