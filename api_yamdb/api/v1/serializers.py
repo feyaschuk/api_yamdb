@@ -1,5 +1,5 @@
-from reviews.models import (Comment, Review, User,
-                            Title, Category, Genre)
+from reviews.models import Comment, Review, User
+from reviews.models import Title, Category, Genre
 from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
