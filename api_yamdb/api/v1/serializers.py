@@ -2,6 +2,7 @@ from reviews.models import (Comment, Review, User,
                             Title, Genre, Category)
 from rest_framework import serializers
 
+
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -21,10 +22,23 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment    
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = User
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('username', 'email')
+        model = User
+
+    def validate(self, data):
+        if data['username'] == 'me':
+            raise validators.ValidationError(
+                'You can not use this username.'
+            )
+        return data
 
 
 class CategorySerializer(serializers.ModelSerializer):
