@@ -1,6 +1,5 @@
-from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, exceptions, status
+from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
@@ -9,7 +8,7 @@ from rest_framework.response import Response
 
 from reviews.models import Comment, Review, User, Title
 from .serializers import (CommentSerializer, ReviewSerializer,
-                          CustomUserSerializer)
+                          CustomUserSerializer, SignUpSerializer)
 from .message_creators import send_confirmation_code
 
 
@@ -49,10 +48,12 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_new_user(request):
-    serializer = CustomUserSerializer(data=request.data)
+    serializer = SignUpSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    serializer.save()
-    confirmation_code = default_token_generator.make_token(request.user)
-    send_confirmation_code(data=request.data, code=confirmation_code)
+    username = request.data['username']
+    email = request.data['email']
+    confirmation_code = User.objects.make_random_password()
+    send_confirmation_code(username, email, confirmation_code)
+    serializer.save(password=confirmation_code)
     return Response(serializer.data, status=status.HTTP_200_OK)

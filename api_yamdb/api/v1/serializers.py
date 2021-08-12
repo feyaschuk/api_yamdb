@@ -21,3 +21,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = User
 
+
+class SignUpSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('username', 'email')
+        model = User
