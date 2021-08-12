@@ -1,15 +1,25 @@
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import permission_required
-from reviews.models import Comment, Review, User
-from reviews.models import Title
+
+from rest_framework import viewsets, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 from django.db.models import Avg
 from django.http import JsonResponse 
 
 from rest_framework import viewsets, permissions
 from rest_framework.pagination import PageNumberPagination
 
+from reviews.models import Comment, Review, User, Title
+from .serializers import (CommentSerializer, ReviewSerializer,
+                          CustomUserSerializer, SignUpSerializer)
+from .message_creators import send_confirmation_code
+
+
 from .permissions import IsOwnerOrReadOnly, IsAdminOnly, IsModeratorOrReadOnly
-from .serializers import (CommentSerializer, ReviewSerializer,UserSerializer, TitleSerializer)
+from .serializers import (CommentSerializer, ReviewSerializer, UserSerializer, TitleSerializer)
 
 class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]    
@@ -26,9 +36,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get("titles_id")
         title = get_object_or_404(Title, pk=title_id)
         return Review.objects.filter(title=title)
-    
+
 class CommentViewSet(viewsets.ModelViewSet): 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]  
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
@@ -46,17 +56,32 @@ class CommentViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOnly,]
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-    pagination_class = PageNumberPagination
 
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (IsAdminOnly(),)
-        return super().get_permissions()
 
-#@permission_required(IsAdminOnly)
-class TitleViewSet(viewsets.ModelViewSet):
-    #permission_classes = [IsAdminUser]
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-    pagination_class = PageNumberPagination
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_new_user(request):
+    serializer = SignUpSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    username = request.data['username']
+    email = request.data['email']
+    confirmation_code = User.objects.make_random_password()
+    send_confirmation_code(username, email, confirmation_code)
+    serializer.save(password=confirmation_code)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_access_token(request):
+    username = request.data.get('username')
+    confirmation_code = request.data.get('confirmation_code')
+    if username is None or confirmation_code is None:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    current_user = get_object_or_404(User, username=username)
+    if current_user.password != confirmation_code:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    token = AccessToken.for_user(current_user)
+    return Response({'token': str(token)}, status=status.HTTP_200_OK)
+
