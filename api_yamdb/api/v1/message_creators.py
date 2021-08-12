@@ -4,8 +4,8 @@ from django.conf import settings
 
 def send_confirmation_code(username, user_email, code):
     send_mail(
-        'Confirmation code for YamDb',
-        f'Deer {username}, you confirmation code: {code}',
+        'Confirmation code from YamDb',
+        f'Dear {username}, you confirmation code: {code}',
         settings.EMAIL_HOST_USER,
         [user_email],
         fail_silently=False,
