@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 
 
 from reviews.models import Comment, Review, User, Title
@@ -57,3 +58,17 @@ def create_new_user(request):
     send_confirmation_code(username, email, confirmation_code)
     serializer.save(password=confirmation_code)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_access_token(request):
+    username = request.data.get('username')
+    confirmation_code = request.data.get('confirmation_code')
+    if username is None or confirmation_code is None:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    current_user = get_object_or_404(User, username=username)
+    if current_user.password != confirmation_code:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    token = AccessToken.for_user(current_user)
+    return Response({'token': str(token)}, status=status.HTTP_200_OK)
