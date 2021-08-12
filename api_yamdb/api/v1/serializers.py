@@ -1,5 +1,5 @@
-from titles.models import Comment, Review, User
-from titles.models import Title, Category, Genre
+from titles.models import (Comment, Review, User,
+                           Title, Category, Genre)
 from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
@@ -70,7 +70,6 @@ class TitleSerializer(serializers.ModelSerializer):
         queryset=Genre.objects.all(),
         many=True
     )
-    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         fields = ('id', 'name', 'year', 'rating',

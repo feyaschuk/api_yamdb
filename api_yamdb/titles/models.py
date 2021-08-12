@@ -54,7 +54,6 @@ class Genre(models.Model):
 class Title(models.Model):
     name = models.CharField(max_length=200,)# изменила имя с title на name, в redoc вывод поля name указан.
     year = models.IntegerField(verbose_name="Год выпуска")
-    rating = models.FloatField()
     description = models.CharField(max_length=200, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True,
                                  related_name='titles_category',

@@ -2,7 +2,7 @@
 import csv
 import sqlite3
 
-conn= sqlite3.connetct("db.sqlite3")
+conn= sqlite3.connect("db.sqlite3")
 c = conn.cursor()
 
 with open("static/data/category.csv", "r") as data:
