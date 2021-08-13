@@ -16,9 +16,7 @@ router_v1.register(
 
 
 urlpatterns = [
-
-
-    path('v1/', include(router_v1.urls)),    
+     
     path('auth/signup/', create_new_user, name='create_new_user'),
     path('auth/token/', create_access_token, name='create_access_token'),
     path('', include(router_v1.urls)),    
