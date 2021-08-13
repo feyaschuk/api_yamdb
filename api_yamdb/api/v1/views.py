@@ -18,7 +18,8 @@ from .serializers import (CommentSerializer, ReviewSerializer,
 from .message_creators import send_confirmation_code
 
 
-from .permissions import IsOwnerOrReadOnly, IsAdminOnly, IsModeratorOrReadOnly
+from .permissions import (IsOwnerOrReadOnly, IsAdminOrSuperUser,
+                          IsModeratorOrReadOnly, CustomIsAuthenticated)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -88,4 +89,6 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [IsAdminOnly, ]
+    lookup_field = 'username'
+    search_fields = ('username',)
+    permission_classes = [CustomIsAuthenticated, IsAdminOrSuperUser, ]
