@@ -8,7 +8,7 @@ class IsOwnerOrReadOnly(BasePermission):
 
 class IsAdminOnly(BasePermission):
      def has_object_permission(self, request, view, obj):              
-        return request.user.is_superuser
+        return request.user.role == 'admin'
 
 class IsModeratorOrReadOnly(BasePermission):
      def has_object_permission(self, request, view, obj): 

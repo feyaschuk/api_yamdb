@@ -88,3 +88,4 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminOnly, ]
