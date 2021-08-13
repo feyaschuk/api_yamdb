@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.decorators import permission_required
 
 
 class User(AbstractUser):
@@ -20,7 +21,12 @@ class User(AbstractUser):
         max_length=150,
         unique=True
     )
-
+    #class Meta:
+        #permissions = (
+            #('user', 'user'),
+        #('moderator', 'moderator'),
+        #('admin', 'admin'),
+       # )
 
 class Category(models.Model):
     # изменила имя с title на name, в redoc вывод поля name указан.
