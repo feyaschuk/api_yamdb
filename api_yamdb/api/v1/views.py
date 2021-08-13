@@ -83,3 +83,8 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()  
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
+
+
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
