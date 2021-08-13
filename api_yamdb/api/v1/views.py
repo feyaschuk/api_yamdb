@@ -5,11 +5,13 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.pagination import PageNumberPagination
 
 
 from reviews.models import Comment, Review, User, Title
 from .serializers import (CommentSerializer, ReviewSerializer,
-                          CustomUserSerializer, SignUpSerializer)
+                          CustomUserSerializer, SignUpSerializer,
+                          TitleSerializer)
 from .message_creators import send_confirmation_code
 
 
