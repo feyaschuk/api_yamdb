@@ -30,10 +30,7 @@ class MixinsViewSet(mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
-    filter_backends = [filters.SearchFilter]
-    permission_classes = (IsOwnerOrReadOnly,)
-    search_fields = ('name', 'slug')
-    lookup_field = 'slug'
+    pass
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -78,11 +75,19 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(MixinsViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    filter_backends = [filters.SearchFilter]
+    permission_classes = (IsOwnerOrReadOnly,)
+    search_fields = ('name', 'slug')
+    lookup_field = 'slug'
 
 
 class GenreViewSet(MixinsViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    filter_backends = [filters.SearchFilter]
+    permission_classes = (IsOwnerOrReadOnly,)
+    search_fields = ('name', 'slug')
+    lookup_field = 'slug'
 
 
 @api_view(['POST'])
