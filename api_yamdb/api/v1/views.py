@@ -27,9 +27,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
     
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, id=self.kwargs.get("titles_id"))
-        return serializer.save(title=title)
-        #return serializer.save(author=self.request.user, title=title) добавить автора, когда User будет готов
+        title = get_object_or_404(Title, id=self.kwargs.get("titles_id"))        
+        return serializer.save(author=self.request.user, title=title) #добавить автора, когда User будет готов
 
     def get_queryset(self):
         title_id = self.kwargs.get("titles_id")
@@ -43,8 +42,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, id=self.kwargs.get("review_id"))
-        return serializer.save(review=review)
-        #return serializer.save(author=self.request.user, review=review) добавить автора, когда User будет готов
+        #return serializer.save(review=review)
+        return serializer.save(author=self.request.user, review=review) #добавить автора, когда User будет готов
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
