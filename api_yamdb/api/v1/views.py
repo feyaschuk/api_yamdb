@@ -1,33 +1,39 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters, mixins
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-<<<<<<< HEAD
-from rest_framework.pagination import PageNumberPagination
-=======
+from rest_framework import DjangoFilterBackend
 from django.db.models import Avg
-from django.http import JsonResponse 
->>>>>>> development
+from django.http import JsonResponse
 
 from rest_framework import viewsets, permissions
 from rest_framework.pagination import PageNumberPagination
 
-from reviews.models import Comment, Review, User, Title
+from reviews.models import (Comment, Review, User, Title,
+                            Category, Genre)
 from .serializers import (CommentSerializer, ReviewSerializer,
-<<<<<<< HEAD
                           CustomUserSerializer, SignUpSerializer,
-                          TitleSerializer)
-=======
-                          CustomUserSerializer, SignUpSerializer, TitleSerializer)
->>>>>>> development
+                          TitleSerializer, CategorySerializer,
+                          GenreSerializer)
 from .message_creators import send_confirmation_code
 
 
 from .permissions import IsOwnerOrReadOnly, IsAdminOnly, IsModeratorOrReadOnly
+from .filters import TitleFilter
+
+
+class MixinsViewSet(mixins.DestroyModelMixin,
+                    mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    viewsets.GenericViewSet):
+    filter_backends = [filters.SearchFilter]
+    permission_classes = (IsOwnerOrReadOnly,)
+    search_fields = ('name', 'slug')
+    lookup_field = 'slug'
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -59,6 +65,24 @@ class CommentViewSet(viewsets.ModelViewSet):
         review_id = self.kwargs.get("review_id")
         review = get_object_or_404(Review, id=review_id)
         return review.comments.all()
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsOwnerOrReadOnly]
+    serializer_class = TitleSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TitleFilter
+
+
+class CategoryViewSet(MixinsViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class GenreViewSet(MixinsViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
 
 
 @api_view(['POST'])
