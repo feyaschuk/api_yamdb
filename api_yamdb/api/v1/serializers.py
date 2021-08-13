@@ -1,5 +1,9 @@
+
+from django.db.models.aggregates import Avg
 from reviews.models import Comment, Review, Title, Genre, Category
 from rest_framework import serializers, validators
+from rest_framework.relations import SlugRelatedField
+from rest_framework.validators import UniqueTogetherValidator 
 
 
 from django.contrib.auth import get_user_model
@@ -7,14 +11,24 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+
 class ReviewSerializer(serializers.ModelSerializer):
-    
+    author = SlugRelatedField(slug_field='username', read_only=True)
+
     class Meta:
         fields = '__all__'
         model = Review
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Review.objects.all(),
+                fields=('title_id', 'author'),
+                message="Возможен только один отзыв!"
+            )
+        ]
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = SlugRelatedField(slug_field='username', read_only=True)
     
     class Meta:
         fields = '__all__'
@@ -73,6 +87,8 @@ class RepresentGenre(serializers.SlugRelatedField):
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    rating = serializers.SerializerMethodField()
+    
     category = RepresentCategory(
         slug_field='slug',
         queryset=Category.objects.all(),
@@ -81,10 +97,17 @@ class TitleSerializer(serializers.ModelSerializer):
     genre = RepresentGenre(
         slug_field='slug',
         queryset=Genre.objects.all(),
-        many=True
+        many=True,
+        required=False
     )
+            
+    def get_rating(self, obj):
+        rating = Review.objects.values('title_id').annotate(rating=Avg('score'))[0]['rating']
+        return round(rating, 1)
+    
 
     class Meta:
         fields = ('id', 'name', 'year', 'rating',
                   'description', 'genre', 'category')
         model = Title
+
