@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.decorators import permission_required
+from django.db.models.aggregates import Avg
 
 
 class User(AbstractUser):
@@ -89,7 +90,6 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
     
-
 class Comment(models.Model):
     text = models.TextField()
     author = models.ForeignKey(

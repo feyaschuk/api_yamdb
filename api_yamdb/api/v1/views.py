@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-
+from django.db.models.aggregates import Avg
 from rest_framework import viewsets, status, filters, mixins
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
@@ -59,14 +59,14 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = TitleSerializer
-    pagination_class = PageNumberPagination
+    #pagination_class = PageNumberPagination
+    queryset = Title.objects.all()
     # filter_backends = [DjangoFilterBackend]
     # filterset_class = TitleFilter
-
-
+    
+    
 class CategoryViewSet(MixinsViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer

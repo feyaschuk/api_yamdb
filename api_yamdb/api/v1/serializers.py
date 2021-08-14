@@ -1,4 +1,4 @@
-
+from django.shortcuts import get_object_or_404
 from django.db.models.aggregates import Avg
 from reviews.models import Comment, Review, Title, Genre, Category
 from rest_framework import serializers, validators
@@ -89,7 +89,7 @@ class RepresentGenre(serializers.SlugRelatedField):
 
 class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
-    
+        
     category = RepresentCategory(
         slug_field='slug',
         queryset=Category.objects.all(),
@@ -101,11 +101,10 @@ class TitleSerializer(serializers.ModelSerializer):
         many=True,
         required=False
     )
-            
     def get_rating(self, obj):
-        rating = Review.objects.values('title_id').annotate(rating=Avg('score'))[0]['rating']
-        return round(rating, 1)
-    
+        rating = Review.objects.aggregate(Avg('score'))
+        return rating       
+       
 
     class Meta:
         fields = ('id', 'name', 'year', 'rating',
