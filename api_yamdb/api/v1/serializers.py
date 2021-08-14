@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.db.models.aggregates import Avg
+from rest_framework.fields import CurrentUserDefault
 from reviews.models import Comment, Review, Title, Genre, Category
 from rest_framework import serializers, validators
 from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
@@ -11,22 +12,17 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-
 class ReviewSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(slug_field='username', read_only=True)
+    author = SlugRelatedField(slug_field='username', read_only=True) 
     
-
     class Meta:
         fields = '__all__'
         model = Review
         read_only_fields = ('author', 'title')
-        #validators = [
-            #UniqueTogetherValidator(
-               # queryset=Review.objects.all(),
-               # fields=('author', 'title'),
-               # message="Возможен только один отзыв!"
-           # )
-       # ]
+        
+        
+    
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
