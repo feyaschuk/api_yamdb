@@ -85,10 +85,10 @@ class Review(models.Model):
                     MaxValueValidator(10))
     )
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, blank=True, null=True, related_name='reviews_title')
+        Title, on_delete=models.CASCADE, related_name='reviews_title')
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
-
+    
 
 class Comment(models.Model):
     text = models.TextField()
