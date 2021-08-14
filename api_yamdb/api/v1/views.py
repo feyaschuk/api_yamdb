@@ -15,10 +15,7 @@ from .serializers import (CommentSerializer, ReviewSerializer, CategorySerialize
                           CustomUserSerializer, SignUpSerializer, TitleSerializer,
                           GenreSerializer)
 from .message_creators import send_confirmation_code
-
-from .permissions import (IsAdminOrSuperUser,
-                          IsModeratorOrReadOnly, CustomIsAuthenticated)
-from .permissions import IsAdminOnly, IsModeratorOrReadOnly
+from .permissions import *
 # from .filters import TitleFilter
 
 
@@ -63,7 +60,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    permission_classes = []
+    permission_classes = (IsAdminOrReadOnly,)
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
     # filter_backends = [DjangoFilterBackend]
@@ -74,7 +71,7 @@ class CategoryViewSet(MixinsViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = ()
+    permission_classes = (IsAdminOrReadOnly,)
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -83,7 +80,7 @@ class GenreViewSet(MixinsViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = ()
+    permission_classes = (IsAdminOrReadOnly,)
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -116,12 +113,6 @@ def create_access_token(request):
     token = AccessToken.for_user(current_user)
     return Response({'token': str(token)}, status=status.HTTP_200_OK)
 
-class TitleViewSet(viewsets.ModelViewSet): 
-    queryset = Title.objects.all()  
-    serializer_class = TitleSerializer
-    pagination_class = PageNumberPagination
-
-
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -129,3 +120,4 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     search_fields = ('username',)
     permission_classes = [CustomIsAuthenticated, IsAdminOrSuperUser, ]
+
