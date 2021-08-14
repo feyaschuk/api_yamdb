@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 #from rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, serializers
 from rest_framework.pagination import PageNumberPagination
+from django.db.models.aggregates import Avg
 
 from reviews.models import (Comment, Review, User, Title,
                             Category, Genre)
@@ -63,6 +64,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.values('title_id').annotate(rating=Avg('score'))[0]['rating']
     permission_classes = []
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination

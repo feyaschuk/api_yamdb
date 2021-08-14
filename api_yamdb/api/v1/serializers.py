@@ -1,5 +1,5 @@
 
-from django.db.models.aggregates import Avg
+#from django.db.models.aggregates import Avg
 from reviews.models import Comment, Review, Title, Genre, Category
 from rest_framework import serializers, validators
 from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
@@ -102,9 +102,9 @@ class TitleSerializer(serializers.ModelSerializer):
         required=False
     )
             
-    def get_rating(self, obj):
-        rating = Review.objects.values('title_id').annotate(rating=Avg('score'))[0]['rating']
-        return round(rating, 1)
+    # def get_rating(self, obj):
+        # rating = Review.objects.values('title_id').annotate(rating=Avg('score'))[0]['rating']
+        # return round(rating, 1)
     
 
     class Meta:
