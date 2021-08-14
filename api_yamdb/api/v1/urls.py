@@ -7,7 +7,7 @@ from .views import (CommentViewSet, ReviewViewSet, TitleViewSet,
 
 
 router_v1 = DefaultRouter(trailing_slash='optional')
-router_v1.register('titles/?', TitleViewSet)
+router_v1.register('titles/?', TitleViewSet, basename='titles')
 router_v1.register(
     r'titles/(?P<titles_id>\d+)/reviews/?',
     ReviewViewSet, basename="reviews")
