@@ -29,7 +29,7 @@ class MixinsViewSet(mixins.DestroyModelMixin,
 
 
 class ReviewViewSet(viewsets.ModelViewSet):     
-    #permission_classes = [IsOwnerOrModeratorOrReadOnly, permissions.IsAuthenticatedOrReadOnly,]   
+    permission_classes = [IsOwnerOrModeratorOrAdminOrReadOnly]   
     serializer_class = ReviewSerializer    
     pagination_class = PageNumberPagination
     
@@ -44,7 +44,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     
 
 class CommentViewSet(viewsets.ModelViewSet): 
-    #permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrModeratorOrReadOnly]    
+    permission_classes = [IsOwnerOrModeratorOrAdminOrReadOnly] 
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
@@ -56,7 +56,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         review_id = self.kwargs.get("review_id")
         review = get_object_or_404(Review, id=review_id)
         return review.comments.all()
-
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -74,7 +73,7 @@ class CategoryViewSet(MixinsViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
-
+    
 
 class GenreViewSet(MixinsViewSet):
     queryset = Genre.objects.all()

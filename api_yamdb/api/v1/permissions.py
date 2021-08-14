@@ -5,7 +5,7 @@ class IsOwnerOrModeratorOrAdminOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-        if request.method == 'POST':
+        if request.method == 'POST' and request.user.is_authenticated:
             if (obj.author == request.user or request.user.role=='moderator'
                 or request.user.role=='admin' or request.user.is_superuser):
                 return True
@@ -15,8 +15,13 @@ class IsOwnerOrModeratorOrAdminOrReadOnly(BasePermission):
                 return True 
 
 class IsAdminOrReadOnly(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return request.method in SAFE_METHODS or request.user.role=='admin'
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        if request.user.is_authenticated:
+            if request.user.role=='admin' or request.user.is_superuser:
+                return True
+    
 
 class IsAdminOrSuperUser(BasePermission):
     def has_permission(self, request, view):
