@@ -61,7 +61,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = TitleSerializer
-    #pagination_class = PageNumberPagination
+    pagination_class = PageNumberPagination
     queryset = Title.objects.all()
     # filter_backends = [DjangoFilterBackend]
     # filterset_class = TitleFilter
