@@ -5,30 +5,22 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-<<<<<<< HEAD
-=======
 from rest_framework import DjangoFilterBackend
-from django.db.models import Avg
-from django.http import JsonResponse
->>>>>>> f559959a163eef5722f8b7a668d9ea83e4645d44
-
 from rest_framework import viewsets, permissions, serializers
 from rest_framework.pagination import PageNumberPagination
 
 from reviews.models import (Comment, Review, User, Title,
                             Category, Genre)
-from .serializers import (CommentSerializer, ReviewSerializer,
-                          CustomUserSerializer, SignUpSerializer,
-                          TitleSerializer, CategorySerializer,
+from .serializers import (CommentSerializer, ReviewSerializer, CategorySerializer,
+                          CustomUserSerializer, SignUpSerializer, TitleSerializer,
                           GenreSerializer)
 from .message_creators import send_confirmation_code
 
+from .permissions import (IsOwnerOrReadOnly, IsAdminOrSuperUser,
+                          IsModeratorOrReadOnly, CustomIsAuthenticated)
+from .permissions import IsOwnerOrReadOnly, IsAdminOnly, IsModeratorOrReadOnly
+# from .filters import TitleFilter
 
-
-from .permissions import IsOwnerOrModeratorOrReadOnly
-
-from .permissions import IsOwnerOrReadOnly
-from .filters import TitleFilter
 
 
 class MixinsViewSet(mixins.DestroyModelMixin,
@@ -74,8 +66,8 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsOwnerOrReadOnly]
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = TitleFilter
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_class = TitleFilter
 
 
 class CategoryViewSet(MixinsViewSet):
@@ -129,7 +121,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
 
-class UserViewSet(viewsets.ModelViewSet): 
-    queryset = User.objects.all()  
+
+
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    pagination_class = PageNumberPagination
+    lookup_field = 'username'
+    search_fields = ('username',)
+    permission_classes = [CustomIsAuthenticated, IsAdminOrSuperUser, ]
