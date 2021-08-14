@@ -2,7 +2,7 @@
 from django.db.models.aggregates import Avg
 from reviews.models import Comment, Review, Title, Genre, Category
 from rest_framework import serializers, validators
-from rest_framework.relations import SlugRelatedField
+from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator 
 
 
@@ -13,19 +13,20 @@ User = get_user_model()
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(slug_field='username', read_only=True)
+    author = SlugRelatedField(slug_field='username', read_only=True, default=serializers.CurrentUserDefault())
+    
 
     class Meta:
         fields = '__all__'
         model = Review
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=('title_id', 'author'),
-                message="Возможен только один отзыв!"
-            )
-        ]
-
+        read_only_fields = ('author', 'title')
+        #validators = [
+            #UniqueTogetherValidator(
+               # queryset=Review.objects.all(),
+               # fields=('author', 'title'),
+               # message="Возможен только один отзыв!"
+           # )
+       # ]
 
 class CommentSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
@@ -33,7 +34,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Comment    
-
+        read_only_fields = ('author', 'review')
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
