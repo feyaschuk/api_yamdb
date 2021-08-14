@@ -88,7 +88,7 @@ class RepresentGenre(serializers.SlugRelatedField):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True, required=False)
     
     category = RepresentCategory(
         slug_field='slug',
