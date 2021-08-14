@@ -57,7 +57,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('title', 'slug')
+        fields = ('name', 'slug')
         model = Category
         lookup_field = 'slug'
         extra_kwargs = {
@@ -67,7 +67,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('title', 'slug')
+        fields = ('name', 'slug')
         model = Genre
         lookup_field = 'slug'
         extra_kwargs = {

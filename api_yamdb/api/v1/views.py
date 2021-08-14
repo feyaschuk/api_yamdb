@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework import DjangoFilterBackend
+#from rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, serializers
 from rest_framework.pagination import PageNumberPagination
 
@@ -16,9 +16,9 @@ from .serializers import (CommentSerializer, ReviewSerializer, CategorySerialize
                           GenreSerializer)
 from .message_creators import send_confirmation_code
 
-from .permissions import (IsOwnerOrReadOnly, IsAdminOrSuperUser,
+from .permissions import (IsAdminOrSuperUser,
                           IsModeratorOrReadOnly, CustomIsAuthenticated)
-from .permissions import IsOwnerOrReadOnly, IsAdminOnly, IsModeratorOrReadOnly
+from .permissions import IsAdminOnly, IsModeratorOrReadOnly
 # from .filters import TitleFilter
 
 
@@ -32,7 +32,7 @@ class MixinsViewSet(mixins.DestroyModelMixin,
 
 
 class ReviewViewSet(viewsets.ModelViewSet):     
-    permission_classes = [IsOwnerOrModeratorOrReadOnly, permissions.IsAuthenticatedOrReadOnly,]   
+    #permission_classes = [IsOwnerOrModeratorOrReadOnly, permissions.IsAuthenticatedOrReadOnly,]   
     serializer_class = ReviewSerializer    
     pagination_class = PageNumberPagination
     
@@ -47,7 +47,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     
 
 class CommentViewSet(viewsets.ModelViewSet): 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrModeratorOrReadOnly]    
+    #permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrModeratorOrReadOnly]    
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
@@ -63,7 +63,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = []
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
     # filter_backends = [DjangoFilterBackend]
@@ -74,7 +74,7 @@ class CategoryViewSet(MixinsViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = ()
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -83,7 +83,7 @@ class GenreViewSet(MixinsViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = ()
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
