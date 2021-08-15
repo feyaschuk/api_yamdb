@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
-
+from django.db.models.aggregates import Avg
 from rest_framework import viewsets, status, filters, mixins
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-#from rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import viewsets, permissions, serializers
 from rest_framework.pagination import PageNumberPagination
 
@@ -28,14 +29,16 @@ class MixinsViewSet(mixins.DestroyModelMixin,
 
 
 
-class ReviewViewSet(viewsets.ModelViewSet):     
-    permission_classes = [IsOwnerOrModeratorOrAdminOrReadOnly]   
+class ReviewViewSet(viewsets.ModelViewSet):       
+    #permission_classes = [IsModeratorOrAdminOrReadOnly,IsOwnerOrReadOnly]   
     serializer_class = ReviewSerializer    
     pagination_class = PageNumberPagination
     
-    def perform_create(self, serializer):
-        title = get_object_or_404(Title, id=self.kwargs.get("titles_id"))
-        return serializer.save(author=self.request.user, title=title) 
+    def perform_create(self, serializer):        
+        title = get_object_or_404(Title, pk=self.kwargs.get("titles_id"))
+        if Review.objects.filter(author=self.request.user, title_id=title.id).exists():
+            raise serializers.ValidationError("You can send only one review for one title.")   
+        return serializer.save(author=self.request.user, title_id=title.id) 
 
     def get_queryset(self):
         title_id = self.kwargs.get("titles_id")
@@ -44,7 +47,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     
 
 class CommentViewSet(viewsets.ModelViewSet): 
-    permission_classes = [IsOwnerOrModeratorOrAdminOrReadOnly] 
+    permission_classes = [IsModeratorOrAdminOrReadOnly, ] 
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
@@ -59,14 +62,14 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
-    # filter_backends = [DjangoFilterBackend]
-    # filterset_class = TitleFilter
-
-
+    queryset = Title.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    #filterset_class = TitleFilter
+    
+    
 class CategoryViewSet(MixinsViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer

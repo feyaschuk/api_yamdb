@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.decorators import permission_required
+from django.db.models.aggregates import Avg
 
 
 class User(AbstractUser):
@@ -76,7 +77,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    text = models.TextField()
+    text = models.CharField(max_length=200)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews')
     score = models.PositiveSmallIntegerField(
@@ -88,8 +89,11 @@ class Review(models.Model):
         Title, on_delete=models.CASCADE, related_name='reviews_title')
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
+        
+    class Meta:
+        unique_together = ('title', 'author',)
+        
     
-
 class Comment(models.Model):
     text = models.TextField()
     author = models.ForeignKey(
