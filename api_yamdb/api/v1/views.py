@@ -14,7 +14,7 @@ from reviews.models import (Comment, Review, User, Title,
                             Category, Genre)
 from .serializers import (CommentSerializer, ReviewSerializer, CategorySerializer,
                           CustomUserSerializer, SignUpSerializer, TitleSerializer,
-                          GenreSerializer)
+                          GenreSerializer, UserMeSerializer)
 from .message_creators import send_confirmation_code
 from .permissions import *
 # from .filters import TitleFilter
@@ -126,7 +126,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=['get', 'patch'],
-        permission_classes=(permissions.IsAuthenticated,)
+        permission_classes=(permissions.IsAuthenticated,),
+        serializer_class=UserMeSerializer
     )
     def me(self, request):
         user_me = User.objects.get(username=self.request.user.username)
