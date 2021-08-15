@@ -1,5 +1,5 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
-from rest_framework.permissions import AllowAny
+
 
 class IsModeratorOrAdminOrReadOnly(BasePermission):    
     def has_permission(self, request, view):
