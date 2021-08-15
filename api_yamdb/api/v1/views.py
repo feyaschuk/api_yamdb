@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.db.models.aggregates import Avg
-from rest_framework import viewsets, status, filters, mixins
+from rest_framework import viewsets, status, filters, mixins, generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
@@ -14,7 +14,7 @@ from reviews.models import (Comment, Review, User, Title,
                             Category, Genre)
 from .serializers import (CommentSerializer, ReviewSerializer, CategorySerializer,
                           CustomUserSerializer, SignUpSerializer, TitleSerializer,
-                          GenreSerializer)
+                          GenreSerializer, UserMeSerializer)
 from .message_creators import send_confirmation_code
 from .permissions import *
 # from .filters import TitleFilter
@@ -123,3 +123,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     search_fields = ('username',)
     permission_classes = [CustomIsAuthenticated, IsAdminOrSuperUser, ]
 
+
+class UserMeAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserMeSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        return User.objects.filter(pk=self.request.user.pk)
