@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 
 #from django.db.models.aggregates import Avg
+=======
+from django.shortcuts import get_object_or_404
+from django.db.models.aggregates import Avg
+from rest_framework.fields import CurrentUserDefault
+>>>>>>> development
 from reviews.models import Comment, Review, Title, Genre, Category
 from rest_framework import serializers, validators
 from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
@@ -11,22 +17,17 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-
 class ReviewSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(slug_field='username', read_only=True, default=serializers.CurrentUserDefault())
+    author = SlugRelatedField(slug_field='username', read_only=True) 
     
-
     class Meta:
         fields = '__all__'
         model = Review
         read_only_fields = ('author', 'title')
-        #validators = [
-            #UniqueTogetherValidator(
-               # queryset=Review.objects.all(),
-               # fields=('author', 'title'),
-               # message="Возможен только один отзыв!"
-           # )
-       # ]
+        
+        
+    
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
@@ -88,8 +89,13 @@ class RepresentGenre(serializers.SlugRelatedField):
 
 
 class TitleSerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
     rating = serializers.IntegerField(read_only=True, required=False)
     
+=======
+    rating = serializers.SerializerMethodField()
+        
+>>>>>>> development
     category = RepresentCategory(
         slug_field='slug',
         queryset=Category.objects.all(),
@@ -101,11 +107,21 @@ class TitleSerializer(serializers.ModelSerializer):
         many=True,
         required=False
     )
+<<<<<<< HEAD
             
     # def get_rating(self, obj):
         # rating = Review.objects.values('title_id').annotate(rating=Avg('score'))[0]['rating']
         # return round(rating, 1)
+=======
+
+>>>>>>> development
     
+    def get_rating(self, obj):        
+        rating = Review.objects.filter(title=obj.id).aggregate(Avg('score'))
+        if rating['score__avg'] is None:
+            return None
+        return rating     
+       
 
     class Meta:
         fields = ('id', 'name', 'year', 'rating',
