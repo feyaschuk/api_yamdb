@@ -1,13 +1,11 @@
-from django.shortcuts import get_object_or_404
-from django.db.models.aggregates import Avg
-from rest_framework.fields import CurrentUserDefault
-from reviews.models import Comment, Review, Title, Genre, Category
-from rest_framework import serializers, validators
-from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
-from rest_framework.validators import UniqueTogetherValidator 
-
-
 from django.contrib.auth import get_user_model
+from django.db.models.aggregates import Avg
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers, validators
+from rest_framework.fields import CurrentUserDefault
+from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
+from rest_framework.validators import UniqueTogetherValidator
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -99,7 +97,7 @@ class TitleSerializer(serializers.ModelSerializer):
         rating = Review.objects.filter(title=obj.id).aggregate(Avg('score'))
         if rating['score__avg'] is None:
             return None
-        return rating     
+        return rating['score__avg']     
        
 
     class Meta:
