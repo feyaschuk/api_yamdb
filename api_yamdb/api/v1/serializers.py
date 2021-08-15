@@ -19,9 +19,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('author', 'title')
-        
-        
-    
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -97,7 +94,6 @@ class TitleSerializer(serializers.ModelSerializer):
         many=True,
         required=False
     )
-
     
     def get_rating(self, obj):        
         rating = Review.objects.filter(title=obj.id).aggregate(Avg('score'))
@@ -110,4 +106,3 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'rating',
                   'description', 'genre', 'category')
         model = Title
-

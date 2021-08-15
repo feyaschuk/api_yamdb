@@ -88,7 +88,6 @@ class GenreViewSet(MixinsViewSet):
     lookup_field = 'slug'
 
 
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_new_user(request):
