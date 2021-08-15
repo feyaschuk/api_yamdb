@@ -99,7 +99,7 @@ class TitleSerializer(serializers.ModelSerializer):
         rating = Review.objects.filter(title=obj.id).aggregate(Avg('score'))
         if rating['score__avg'] is None:
             return None
-        return rating     
+        return rating['score__avg']     
        
 
     class Meta:

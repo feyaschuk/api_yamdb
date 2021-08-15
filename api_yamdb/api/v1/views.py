@@ -30,7 +30,7 @@ class MixinsViewSet(mixins.DestroyModelMixin,
 
 
 class ReviewViewSet(viewsets.ModelViewSet):       
-    #permission_classes = [IsModeratorOrAdminOrReadOnly,IsOwnerOrReadOnly]   
+    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]   
     serializer_class = ReviewSerializer    
     pagination_class = PageNumberPagination
     
@@ -47,7 +47,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     
 
 class CommentViewSet(viewsets.ModelViewSet): 
-    permission_classes = [IsModeratorOrAdminOrReadOnly, ] 
+    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly] 
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
