@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (CommentViewSet, ReviewViewSet, TitleViewSet,
                     CustomUserViewSet, create_new_user, create_access_token,
-                    GenreViewSet, CategoryViewSet, UserMeAPIView)
+                    GenreViewSet, CategoryViewSet)
 
 
 router_v1 = DefaultRouter(trailing_slash='optional')
@@ -23,7 +23,6 @@ urlpatterns = [
      
     path('auth/signup/', create_new_user, name='create_new_user'),
     path('auth/token/', create_access_token, name='create_access_token'),
-    path('users/me/', UserMeAPIView.as_view(), name='user_me_actions'),
     path('', include(router_v1.urls)),    
 
 ]
