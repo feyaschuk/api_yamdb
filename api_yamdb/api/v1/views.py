@@ -1,22 +1,21 @@
 from django.shortcuts import get_object_or_404
-from django.db.models.aggregates import Avg
-from rest_framework import viewsets, status, filters, mixins, generics
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import (filters, mixins, serializers, status,
+                            viewsets)
 from rest_framework.decorators import api_view, permission_classes, action
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from django_filters.rest_framework import DjangoFilterBackend
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
-from rest_framework import viewsets, permissions, serializers
-from rest_framework.pagination import PageNumberPagination
-
-from reviews.models import (Comment, Review, User, Title,
-                            Category, Genre)
-from .serializers import (CommentSerializer, ReviewSerializer, CategorySerializer,
-                          CustomUserSerializer, SignUpSerializer, TitleSerializer,
-                          GenreSerializer, UserMeSerializer)
 from .message_creators import send_confirmation_code
-from .permissions import *
+from .permissions import (IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly,
+                          IsAdminOrReadOnly, IsAdminOrSuperUser, CustomIsAuthenticated)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          CustomUserSerializer, GenreSerializer,
+                          ReviewSerializer, SignUpSerializer, TitleSerializer,
+                          UserMeSerializer)
 # from .filters import TitleFilter
 
 
@@ -28,9 +27,8 @@ class MixinsViewSet(mixins.DestroyModelMixin,
     pass
 
 
-
 class ReviewViewSet(viewsets.ModelViewSet):       
-    # permission_classes = [IsModeratorOrAdminOrReadOnly,IsOwnerOrReadOnly]
+    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = ReviewSerializer    
     pagination_class = PageNumberPagination
     
@@ -44,10 +42,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get("titles_id")
         title = get_object_or_404(Title, id=title_id)
         return Review.objects.filter(title=title)
-    
+
 
 class CommentViewSet(viewsets.ModelViewSet): 
-    permission_classes = [IsModeratorOrAdminOrReadOnly, ] 
+    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
@@ -126,7 +124,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=['get', 'patch'],
-        permission_classes=(permissions.IsAuthenticated,),
+        permission_classes=(IsAuthenticated,),
         serializer_class=UserMeSerializer
     )
     def me(self, request):
