@@ -27,8 +27,6 @@ class MixinsViewSet(mixins.DestroyModelMixin,
                     viewsets.GenericViewSet):
     pass
 
-
-
 class ReviewViewSet(viewsets.ModelViewSet):       
     permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]   
     serializer_class = ReviewSerializer    
@@ -44,6 +42,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get("titles_id")
         title = get_object_or_404(Title, id=title_id)
         return Review.objects.filter(title=title)
+
+    def perform_destroy(self, serializer): 
+        title = get_object_or_404(Title, pk=self.kwargs.get("titles_id"))
+        review = Review.objects.get(title_id=title.id)
+        review.delete()        
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 
 class CommentViewSet(viewsets.ModelViewSet): 

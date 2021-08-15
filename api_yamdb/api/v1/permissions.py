@@ -6,13 +6,11 @@ class IsModeratorOrAdminOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         if request.user.is_authenticated:
-            if request.method=="POST":
+            if request.method=="POST" or request.method=="PATCH" or request.method=='DELETE':
                 return True
             elif (request.user.role=='admin' 
             or request.user.role=='moderator' or request.user.is_superuser):
                 return True
-
-    
 
 class IsOwnerOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -20,7 +18,8 @@ class IsOwnerOrReadOnly(BasePermission):
             return True
         else:
             if request.method=="PATCH" or request.method=='DELETE':
-                if obj.author == request.user:  
+                if obj.author == request.user or (request.user.role=='admin' 
+            or request.user.role=='moderator' or request.user.is_superuser):  
                     return True
              
 
