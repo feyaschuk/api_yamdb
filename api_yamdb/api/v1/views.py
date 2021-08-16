@@ -2,21 +2,21 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (filters, mixins, serializers, status,
                             viewsets)
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
 from .message_creators import send_confirmation_code
-from .permissions import (IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly, 
+from .permissions import (IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly,
                           IsAdminOrReadOnly, IsAdminOrSuperUser, CustomIsAuthenticated)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
-                          ReviewSerializer, SignUpSerializer, TitleSerializer)
-
-#from .filters import TitleFilter
+                          ReviewSerializer, SignUpSerializer, TitleSerializer,
+                          UserMeSerializer)
+from .filters import TitleFilter
 
 
 
@@ -26,8 +26,9 @@ class MixinsViewSet(mixins.DestroyModelMixin,
                     viewsets.GenericViewSet):
     pass
 
+
 class ReviewViewSet(viewsets.ModelViewSet):       
-    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]   
+    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = ReviewSerializer    
     pagination_class = PageNumberPagination
     
@@ -41,10 +42,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get("titles_id")
         title = get_object_or_404(Title, id=title_id)
         return Review.objects.filter(title=title)
-  
+
 
 class CommentViewSet(viewsets.ModelViewSet): 
-    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly] 
+    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
@@ -64,7 +65,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
     queryset = Title.objects.all()
     filter_backends = [DjangoFilterBackend]
-    #filterset_class = TitleFilter
+    filterset_class = TitleFilter
     
     
 class CategoryViewSet(MixinsViewSet):
@@ -105,10 +106,10 @@ def create_access_token(request):
     username = request.data.get('username')
     confirmation_code = request.data.get('confirmation_code')
     if username is None or confirmation_code is None:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error_message': 'Fields "username" and "confirmation_code" are necessary!'}, status=status.HTTP_400_BAD_REQUEST)
     current_user = get_object_or_404(User, username=username)
     if current_user.password != confirmation_code:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error_message': 'Confirmation code is not correct!'}, status=status.HTTP_400_BAD_REQUEST)
     token = AccessToken.for_user(current_user)
     return Response({'token': str(token)}, status=status.HTTP_200_OK)
 
@@ -120,3 +121,21 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     search_fields = ('username',)
     permission_classes = [CustomIsAuthenticated, IsAdminOrSuperUser, ]
 
+    @action(
+        detail=False,
+        methods=['get', 'patch'],
+        permission_classes=(IsAuthenticated,),
+        serializer_class=UserMeSerializer
+    )
+    def me(self, request):
+        user_me = User.objects.get(username=self.request.user.username)
+
+        if request.method == 'GET':
+            serializer = self.get_serializer(user_me)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.method == 'PATCH':
+            serializer = self.get_serializer(user_me, data=request.data, partial=True)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
