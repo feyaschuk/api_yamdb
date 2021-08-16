@@ -53,7 +53,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrModeratorOrAdminOrReadOnly, ]
+    permission_classes = [
+        IsModeratorOrAdminOrReadOnly,
+        IsOwnerOrModeratorOrAdminOrReadOnly,
+    ]
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
