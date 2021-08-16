@@ -20,7 +20,6 @@ class Command(BaseCommand):
     FIELDS_WITH_ID = {
         'category': 'category_id',
         'author': 'author_id',
-        
     }
 
     USER_DICT = {
