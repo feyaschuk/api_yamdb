@@ -16,7 +16,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReviewSerializer, SignUpSerializer, TitleSerializer,
                           UserMeSerializer)
-# from .filters import TitleFilter
+from .filters import TitleFilter
 
 
 
@@ -65,7 +65,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
     queryset = Title.objects.all()
     filter_backends = [DjangoFilterBackend]
-    # filterset_class = TitleFilter
+    filterset_class = TitleFilter
     
     
 class CategoryViewSet(MixinsViewSet):
