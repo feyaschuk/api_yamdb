@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import django_filters as filters
 from django_filters.rest_framework import FilterSet
 
+=======
+from rest_framework import filters
+>>>>>>> development
 from reviews.models import Title
 
 
