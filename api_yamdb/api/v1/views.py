@@ -13,7 +13,7 @@ from .filters import TitleFilter
 from .message_creators import send_confirmation_code
 from .permissions import (CustomIsAuthenticated, IsAdminOrReadOnly,
                           IsAdminOrSuperUser, IsModeratorOrAdminOrReadOnly,
-                          IsOwnerOrReadOnly)
+                          IsOwnerOrModeratorOrAdminOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReviewSerializer, SignUpSerializer, TitleSerializer,
@@ -28,7 +28,10 @@ class MixinsViewSet(mixins.DestroyModelMixin,
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [
+        IsModeratorOrAdminOrReadOnly,
+        IsOwnerOrModeratorOrAdminOrReadOnly,
+    ]
     serializer_class = ReviewSerializer
     pagination_class = PageNumberPagination
 
@@ -50,7 +53,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsModeratorOrAdminOrReadOnly, IsOwnerOrModeratorOrAdminOrReadOnly, ]
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
@@ -65,7 +68,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = [IsAdminOrReadOnly, ]
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
     queryset = Title.objects.all()
@@ -77,7 +80,7 @@ class CategoryViewSet(MixinsViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = [IsAdminOrReadOnly, ]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -86,7 +89,7 @@ class GenreViewSet(MixinsViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = [IsAdminOrReadOnly, ]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 

@@ -19,7 +19,7 @@ class IsModeratorOrAdminOrReadOnly(BasePermission):
         return request.method in SAFE_METHODS
 
 
-class IsOwnerOrReadOnly(BasePermission):
+class IsOwnerOrModeratorOrAdminOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method == 'PATCH' or request.method == 'DELETE':
             if obj.author == request.user or (
