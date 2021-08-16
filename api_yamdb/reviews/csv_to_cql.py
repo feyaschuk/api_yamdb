@@ -69,11 +69,15 @@ with open("static/data/review.csv", "r") as data:
         id = row['id']
         title_id = row['title_id']
         text = row['text']
+        title_id = row['author']
+        text = row['score']
+        title_id = row['title_id']
+        text = row['pub_date']
         c.execute(
             "INSERT INTO reviews_review "
-            "(id, title_id, text) "
-            "VALUES(?, ?, ?)",
-            (id, title_id, text)
+            "(id, title_id, text, author, score, pub_date) "
+            "VALUES(?, ?, ?, ?, ?, ?)",
+            (id, title_id, text, author, score, pub_date)
         )
         conn.commit()
 
