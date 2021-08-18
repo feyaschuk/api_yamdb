@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db.models.aggregates import Avg
 from rest_framework import serializers, validators
 from rest_framework.relations import SlugRelatedField
+from datetime import datetime
+from django.core.exceptions import ValidationError
 
 from reviews.models import Category, Comment, Genre, Review, Title
 
@@ -101,6 +103,14 @@ class TitleSerializer(serializers.ModelSerializer):
         many=True,
         required=False
     )
+
+    def validate(self, year):
+        if year > datetime.now().year or year < 1000:
+            raise ValidationError(
+                ('Укажите 4-х значиный год, не больше текущего года'),
+                params={'year': year},
+        )
+
 
     def get_rating(self, obj):
         rating = Review.objects.filter(title=obj.id).aggregate(Avg('score'))
