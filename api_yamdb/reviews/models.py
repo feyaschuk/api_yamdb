@@ -3,22 +3,29 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
-class User(AbstractUser):
-    DEFAULT_USER = 'user'
-    USER_STATUSES = [
-        ('user', 'user'),
-        ('moderator', 'moderator'),
-        ('admin', 'admin')
+class UserRoles():
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
+    USER_ROLE_CHOICES = [
+        (USER, USER),
+        (MODERATOR, MODERATOR),
+        (ADMIN, ADMIN),
     ]
+
+
+class User(AbstractUser):
     role = models.CharField(
         max_length=150,
-        choices=USER_STATUSES,
-        default=DEFAULT_USER
+        choices=UserRoles.USER_ROLE_CHOICES,
+        default=UserRoles.USER,
+        verbose_name='user_role'
     )
-    bio = models.TextField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True, verbose_name='user_bio')
     email = models.EmailField(
         max_length=150,
-        unique=True
+        unique=True,
+        verbose_name='user_email'
     )
 
 
