@@ -1,9 +1,9 @@
+from datetime import datetime
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.db.models.aggregates import Avg
 from rest_framework import serializers, validators
 from rest_framework.relations import SlugRelatedField
-from datetime import datetime
-from django.core.exceptions import ValidationError
 
 from reviews.models import Category, Comment, Genre, Review, Title
 
@@ -17,6 +17,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('author', 'title')
+
+    def create(self, validated_data):
+        title = validated_data.pop('title_id')
+        if Review.objects.filter(
+            author=self.context['request'].user,
+            title_id=title
+        ).exists():
+            raise serializers.ValidationError(
+                "You can send only one review for one title.")
+
+        return Review.objects.create(title_id=title, ** validated_data)
 
 
 class CommentSerializer(serializers.ModelSerializer):
