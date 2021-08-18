@@ -94,7 +94,12 @@ class Title(models.Model):
             )
         ]
     )
-    description = models.CharField(max_length=200, blank=True, null=True)
+    description = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name='Описание произведения'
+    )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
         blank=True,
@@ -131,7 +136,7 @@ class Review(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['title', 'author'],
-                                    name='unique_togather_title_author')]
+                                    name='unique_together_title_author')]
         verbose_name_plural = 'Отзывы'
 
     def __str__(self):
