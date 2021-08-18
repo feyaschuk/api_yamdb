@@ -1,32 +1,54 @@
+import datetime as dt
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
-class User(AbstractUser):
-    DEFAULT_USER = 'user'
-    USER_STATUSES = [
-        ('user', 'user'),
-        ('moderator', 'moderator'),
-        ('admin', 'admin')
+class UserRoles:
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
+    USER_ROLE_CHOICES = [
+        (USER, USER),
+        (MODERATOR, MODERATOR),
+        (ADMIN, ADMIN),
     ]
+
+
+class User(AbstractUser):
     role = models.CharField(
         max_length=150,
-        choices=USER_STATUSES,
-        default=DEFAULT_USER
+        choices=UserRoles.USER_ROLE_CHOICES,
+        default=UserRoles.USER,
+        verbose_name='Роль пользователя'
     )
-    bio = models.TextField(blank=True, null=True)
+    bio = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Биография пользователя'
+    )
     email = models.EmailField(
         max_length=150,
-        unique=True
+        unique=True,
+        verbose_name='E-Mail пользователя'
     )
+
+    def __str__(self):
+        return self.username
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=200,
-                            help_text='Укажите название категории')
-    slug = models.SlugField(max_length=150, unique=True,
-                            verbose_name='Идентификатор категории',)
+    name = models.CharField(
+        max_length=200,
+        help_text='Укажите название категории',
+        verbose_name='Название категории'
+    )
+    slug = models.SlugField(
+        max_length=150,
+        unique=True,
+        verbose_name='Идентификатор категории',
+    )
 
     class Meta:
         ordering = ('name',)
@@ -37,9 +59,18 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=200, help_text='Укажите жанр')
-    slug = models.SlugField(max_length=150, unique=True, blank=True, null=True,
-                            verbose_name='Идентификатор жанра',)
+    name = models.CharField(
+        max_length=200,
+        help_text='Укажите жанр',
+        verbose_name='Название жанра'
+    )
+    slug = models.SlugField(
+        max_length=150,
+        unique=True,
+        blank=True,
+        null=True,
+        verbose_name='Идентификатор жанра',
+    )
 
     class Meta:
         ordering = ('name',)
@@ -50,14 +81,25 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=200,)
-    year = models.IntegerField(verbose_name='Год выпуска')
+    name = models.CharField(
+        max_length=200,
+        verbose_name='Название произведения'
+    )
+    year = models.PositiveSmallIntegerField(
+        verbose_name='Год выпуска',
+        validators=[
+            MaxValueValidator(
+                dt.datetime.now().year,
+                'Год не может быть больше текущего'
+            )
+        ]
+    )
     description = models.CharField(max_length=200, blank=True, null=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='titles_category',
+        related_name='titles',
         verbose_name='Категория'
     )
     genre = models.ManyToManyField(Genre, verbose_name='Жанр', blank=True)
