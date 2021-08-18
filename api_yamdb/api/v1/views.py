@@ -49,7 +49,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         title_id = self.kwargs.get('titles_id')
         title = get_object_or_404(Title, id=title_id)
-        return Review.objects.filter(title=title)
+        return title.reviews_title.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
