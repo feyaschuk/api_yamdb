@@ -3,7 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
-class UserRoles():
+class UserRoles:
     USER = 'user'
     MODERATOR = 'moderator'
     ADMIN = 'admin'
@@ -27,6 +27,9 @@ class User(AbstractUser):
         unique=True,
         verbose_name='user_email'
     )
+
+    def __str__(self):
+        return self.username
 
 
 class Category(models.Model):

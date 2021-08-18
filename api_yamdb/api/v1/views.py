@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, serializers, status, viewsets
@@ -10,7 +12,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title, User
 
 from .filters import TitleFilter
-from .message_creators import send_confirmation_code
 from .permissions import (CustomIsAuthenticated, IsAdminOrReadOnly,
                           IsAdminOrSuperUser, IsModeratorOrAdminOrReadOnly,
                           IsOwnerOrModeratorOrAdminOrReadOnly)
@@ -106,7 +107,13 @@ def create_new_user(request):
     username = request.data['username']
     email = request.data['email']
     confirmation_code = User.objects.make_random_password()
-    send_confirmation_code(username, email, confirmation_code)
+    send_mail(
+        'Confirmation code from YamDb',
+        f'Dear {username}, you confirmation code: {confirmation_code}',
+        settings.EMAIL_HOST_USER,
+        [email],
+        fail_silently=False,
+    )
     serializer.save(password=confirmation_code)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
