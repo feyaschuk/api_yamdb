@@ -1,6 +1,4 @@
 from datetime import datetime
-from django.utils import timezone
-from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.db.models.aggregates import Avg
 from rest_framework import serializers, validators
@@ -135,7 +133,7 @@ class TitleSerializer(serializers.ModelSerializer):
             return None
         return rating['score__avg']
     
-    def validate_year(self, value):
+    def validate(self, value):
         now_year = datetime.now().year
         if value in range(1000, now_year+1):
             return value
