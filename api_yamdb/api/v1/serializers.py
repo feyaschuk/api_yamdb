@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.db.models.aggregates import Avg
 from django.shortcuts import get_object_or_404
@@ -18,16 +19,15 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         read_only_fields = ('author', 'title')
 
-            
     def validate(self, data):
-        title = self.context['view'].kwargs.get('titles_id') 
-        request = self.context.get('request')       
+        title = self.context['view'].kwargs.get('titles_id')
+        request = self.context.get('request')
         if request.method != 'PATCH' and Review.objects.filter(
             author=self.context['request'].user,
             title_id=title
         ).exists():
             raise serializers.ValidationError(
-                "You can send only one review for one title.")        
+                'You can send only one review for one title.')
         return data
 
 
@@ -150,13 +150,13 @@ class TitleSerializer(serializers.ModelSerializer):
             return None
         return rating['score__avg']
 
-    def validate(self, value):
+    def validate_year(self, value):
         now_year = datetime.now().year
         if value in range(1000, now_year + 1):
             return value
         else:
             raise serializers.ValidationError(
-                f"Введите 4-х значный год, но небольше текущего"
+                'Enter the year from 1000 to current.'
             )
 
     class Meta:
