@@ -87,27 +87,15 @@ class GenreSerializer(serializers.ModelSerializer):
         }
 
 
-class RepresentCategory(serializers.SlugRelatedField):
-    def to_representation(self, obj):
-        serializer = CategorySerializer(obj)
-        return serializer.data
-
-
-class RepresentGenre(serializers.SlugRelatedField):
-    def to_representation(self, obj):
-        serializer = GenreSerializer(obj)
-        return serializer.data
-
-
 class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
-    category = RepresentCategory(
+    category = SlugRelatedField(
         slug_field='slug',
         queryset=Category.objects.all(),
         required=False
     )
-    genre = RepresentGenre(
+    genre = SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(),
         many=True,
