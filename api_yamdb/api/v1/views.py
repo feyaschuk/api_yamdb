@@ -36,14 +36,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, pk=self.kwargs.get("titles_id"))
-        if Review.objects.filter(
-                author=self.request.user,
-                title_id=title.id
-        ).exists():
-            raise serializers.ValidationError(
-                'You can send only one review for one title.'
-            )
+        title = get_object_or_404(Title, pk=self.kwargs.get("titles_id"))        
         return serializer.save(author=self.request.user, title_id=title.id)
 
     def get_queryset(self):

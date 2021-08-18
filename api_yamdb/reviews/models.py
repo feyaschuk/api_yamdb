@@ -85,8 +85,10 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         auto_now_add=True, db_index=True, verbose_name='Дата отзыва')
 
-    class Meta:
-        unique_together = ('title', 'author',)
+    class Meta:        
+        constraints = [
+            models.UniqueConstraint(fields=['title', 'author'], 
+                                    name='unique_togather_title_author')]
         verbose_name_plural = 'Отзывы'
 
     def __str__(self):
