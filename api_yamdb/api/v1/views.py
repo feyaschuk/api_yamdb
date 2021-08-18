@@ -75,7 +75,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
 
-class CategoryViewSet(DestroyListCreate):
+class CategoryViewSet(DestroyListCreateViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
@@ -86,7 +86,7 @@ class CategoryViewSet(DestroyListCreate):
     lookup_field = 'slug'
 
 
-class GenreViewSet(DestroyListCreate):
+class GenreViewSet(DestroyListCreateViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = [filters.SearchFilter]
