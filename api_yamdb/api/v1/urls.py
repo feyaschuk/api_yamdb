@@ -9,7 +9,7 @@ router_v1 = DefaultRouter(trailing_slash='optional')
 router_v1.register('titles/?', TitleViewSet, basename='titles')
 router_v1.register(
     r'titles/(?P<titles_id>\d+)/reviews/?',
-    ReviewViewSet, basename="reviews")
+    ReviewViewSet, basename='reviews')
 router_v1.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments/?',
     CommentViewSet, basename="comments")
@@ -19,9 +19,9 @@ router_v1.register('categories/?', CategoryViewSet, basename='categories')
 
 
 urlpatterns = [
-     
+
     path('auth/signup/', create_new_user, name='create_new_user'),
     path('auth/token/', create_access_token, name='create_access_token'),
-    path('', include(router_v1.urls)),    
+    path('', include(router_v1.urls)),
 
 ]

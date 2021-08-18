@@ -1,8 +1,6 @@
-from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models.aggregates import Avg
 
 
 class User(AbstractUser):
@@ -22,37 +20,29 @@ class User(AbstractUser):
         max_length=150,
         unique=True
     )
-    #class Meta:
-        #permissions = (
-            #('user', 'user'),
-        #('moderator', 'moderator'),
-        #('admin', 'admin'),
-       # )
+
 
 class Category(models.Model):
-    # изменила имя с title на name, в redoc вывод поля name указан.
     name = models.CharField(max_length=200,
                             help_text='Укажите название категории')
     slug = models.SlugField(max_length=150, unique=True,
                             verbose_name='Идентификатор категории',)
 
     class Meta:
-        # изменила имя с title на name, в redoc вывод поля name указан.
         ordering = ('name',)
         verbose_name_plural = 'Категория'
 
     def __str__(self):
-        return self.name  # изменила имя с title на name, в redoc вывод поля name указан.
+        return self.name
 
 
 class Genre(models.Model):
     name = models.CharField(max_length=200, help_text='Укажите жанр')
-    # изменила имя с title на name, в redoc вывод поля name указан.
     slug = models.SlugField(max_length=150, unique=True, blank=True, null=True,
                             verbose_name='Идентификатор жанра',)
 
     class Meta:
-        ordering = ('name',)  # изменила имя с title на name, в redoc вывод поля name указан.
+        ordering = ('name',)
         verbose_name_plural = 'Жанр'
 
     def __str__(self):
@@ -60,12 +50,16 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=200,)  # изменила имя с title на name, в redoc вывод поля name указан.
-    year = models.IntegerField(verbose_name="Год выпуска")
+    name = models.CharField(max_length=200,)
+    year = models.IntegerField(verbose_name='Год выпуска')
     description = models.CharField(max_length=200, blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True,
-                                 related_name='titles_category',
-                                 verbose_name='Категория')
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='titles_category',
+        verbose_name='Категория'
+    )
     genre = models.ManyToManyField(Genre, verbose_name='Жанр', blank=True)
 
     class Meta:
@@ -89,11 +83,11 @@ class Review(models.Model):
         Title, on_delete=models.CASCADE, related_name='reviews_title')
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
-        
+
     class Meta:
         unique_together = ('title', 'author',)
-        
-    
+
+
 class Comment(models.Model):
     text = models.TextField()
     author = models.ForeignKey(
