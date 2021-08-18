@@ -21,13 +21,17 @@ class User(AbstractUser):
         max_length=150,
         choices=UserRoles.USER_ROLE_CHOICES,
         default=UserRoles.USER,
-        verbose_name='user_role'
+        verbose_name='Роль пользователя'
     )
-    bio = models.TextField(blank=True, null=True, verbose_name='user_bio')
+    bio = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Биография пользователя'
+    )
     email = models.EmailField(
         max_length=150,
         unique=True,
-        verbose_name='user_email'
+        verbose_name='E-Mail пользователя'
     )
 
     def __str__(self):
