@@ -8,21 +8,24 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+
 from reviews.models import Category, Genre, Review, Title, User
 
 from .filters import TitleFilter
-from .permissions import (IsSuperUser, IsAdmin, IsOwner, IsModerator,
-                          IsSafeMethod, CustomIsAuthenticated)
+from .permissions import (CustomIsAuthenticated, IsAdmin, IsModerator, IsOwner,
+                          IsSafeMethod, IsSuperUser)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReviewSerializer, SignUpSerializer, TitleSerializer,
-                          UserMeSerializer, TokenCreateSerializer)
+                          TokenCreateSerializer, UserMeSerializer)
 
 
-class DestroyListCreateViewSet(mixins.DestroyModelMixin,
-                    mixins.ListModelMixin,
-                    mixins.CreateModelMixin,
-                    viewsets.GenericViewSet):
+class DestroyListCreateViewSet(
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
     pass
 
 
