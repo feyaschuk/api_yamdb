@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.db.models.aggregates import Avg
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers, validators
 from rest_framework.relations import SlugRelatedField
 
@@ -15,6 +18,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('author', 'title')
+
+    def validate(self, data):
+        title = self.context['view'].kwargs.get('titles_id')
+        request = self.context.get('request')
+        if request.method != 'PATCH' and Review.objects.filter(
+            author=self.context['request'].user,
+            title_id=title
+        ).exists():
+            raise serializers.ValidationError(
+                'You can send only one review for one title.')
+        return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -64,7 +78,23 @@ class SignUpSerializer(serializers.ModelSerializer):
             raise validators.ValidationError(
                 'You can not use this username.'
             )
+
         return data
+
+
+class TokenCreateSerializer(serializers.ModelSerializer):
+    confirmation_code = serializers.CharField(source='password')
+
+    class Meta:
+        fields = ('username', 'confirmation_code')
+        model = User
+
+    def validate(self, data):
+        current_user = get_object_or_404(User, username=data['username'])
+        if data['confirmation_code'] != current_user.password:
+            raise validators.ValidationError(
+                'Confirmation code is not correct!'
+            )
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -119,6 +149,15 @@ class TitleSerializer(serializers.ModelSerializer):
         if rating['score__avg'] is None:
             return None
         return rating['score__avg']
+
+    def validate_year(self, value):
+        now_year = datetime.now().year
+        if value in range(1000, now_year + 1):
+            return value
+        else:
+            raise serializers.ValidationError(
+                'Enter the year from 1000 to current.'
+            )
 
     class Meta:
         fields = ('id', 'name', 'year', 'rating',
