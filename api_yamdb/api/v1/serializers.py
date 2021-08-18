@@ -14,17 +14,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('author', 'title')
-
-    def create(self, validated_data):
-        title = validated_data.pop('title_id')
-        if Review.objects.filter(
+            
+    def validate(self, data):
+        title = self.context['view'].kwargs.get('titles_id') 
+        request = self.context.get('request')       
+        if request.method != 'PATCH' and Review.objects.filter(
             author=self.context['request'].user,
             title_id=title
         ).exists():
             raise serializers.ValidationError(
-                "You can send only one review for one title.")
-
-        return Review.objects.create(title_id=title, ** validated_data)
+                "You can send only one review for one title.")        
+        return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
