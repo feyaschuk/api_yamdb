@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.db.models.aggregates import Avg
@@ -100,27 +101,32 @@ class GenreSerializer(serializers.ModelSerializer):
         }
 
 
+class RepresentCategory(serializers.SlugRelatedField):
+    def to_representation(self, obj):
+        serializer = CategorySerializer(obj)
+        return serializer.data
+
+
+class RepresentGenre(serializers.SlugRelatedField):
+    def to_representation(self, obj):
+        serializer = GenreSerializer(obj)
+        return serializer.data
+
+
 class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
-    category = SlugRelatedField(
+    category = RepresentCategory(
         slug_field='slug',
         queryset=Category.objects.all(),
         required=False
     )
-    genre = SlugRelatedField(
+    genre = RepresentGenre(
         slug_field='slug',
         queryset=Genre.objects.all(),
         many=True,
         required=False
     )
-
-    def validate(self, year):
-        if year > datetime.now().year or year < 1000:
-            raise ValidationError(
-                ('Укажите 4-х значиный год, не больше текущего года'),
-                params={'year': year},
-        )
 
 
     def get_rating(self, obj):
@@ -128,6 +134,15 @@ class TitleSerializer(serializers.ModelSerializer):
         if rating['score__avg'] is None:
             return None
         return rating['score__avg']
+    
+    def validate_year(self, value):
+        now_year = datetime.now().year
+        if value in range(1000, now_year+1):
+            return value
+        else:
+            raise serializers.ValidationError(
+                f"Введите 4-х значный год, но небольше текущего"
+            )
 
     class Meta:
         fields = ('id', 'name', 'year', 'rating',
