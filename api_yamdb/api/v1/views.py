@@ -18,7 +18,7 @@ from .permissions import (CustomIsAuthenticated, IsAdminOrReadOnly,
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReviewSerializer, SignUpSerializer, TitleSerializer,
-                          UserMeSerializer)
+                          UserMeSerializer, TokenCreateSerializer)
 
 
 class MixinsViewSet(mixins.DestroyModelMixin,
@@ -102,8 +102,7 @@ class GenreViewSet(MixinsViewSet):
 @permission_classes([AllowAny])
 def create_new_user(request):
     serializer = SignUpSerializer(data=request.data)
-    if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
     username = request.data['username']
     email = request.data['email']
     confirmation_code = User.objects.make_random_password()
@@ -121,19 +120,10 @@ def create_new_user(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_access_token(request):
+    serializer = TokenCreateSerializer(data=request.data)
     username = request.data.get('username')
-    confirmation_code = request.data.get('confirmation_code')
-    if username is None or confirmation_code is None:
-        return Response(
-            {'error_message': 'Not all required fields are filled in!'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    serializer.is_valid(raise_exception=True)
     current_user = get_object_or_404(User, username=username)
-    if current_user.password != confirmation_code:
-        return Response(
-            {'error_message': 'Confirmation code is not correct!'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
     token = AccessToken.for_user(current_user)
     return Response({'token': str(token)}, status=status.HTTP_200_OK)
 
@@ -155,18 +145,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         user_me = User.objects.get(username=self.request.user.username)
         if request.method == 'GET':
             serializer = self.get_serializer(user_me)
-            response = Response(serializer.data, status=status.HTTP_200_OK)
-        if request.method == 'PATCH':
-            serializer = self.get_serializer(
-                user_me,
-                data=request.data,
-                partial=True
-            )
-            if not serializer.is_valid():
-                return Response(
-                    serializer.errors,
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            serializer.save()
-            response = Response(serializer.data, status=status.HTTP_200_OK)
-        return response
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = self.get_serializer(
+            user_me,
+            data=request.data,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

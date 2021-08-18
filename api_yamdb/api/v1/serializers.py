@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models.aggregates import Avg
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers, validators
 from rest_framework.relations import SlugRelatedField
 
@@ -64,7 +65,23 @@ class SignUpSerializer(serializers.ModelSerializer):
             raise validators.ValidationError(
                 'You can not use this username.'
             )
+
         return data
+
+
+class TokenCreateSerializer(serializers.ModelSerializer):
+    confirmation_code = serializers.CharField(source='password')
+
+    class Meta:
+        fields = ('username', 'confirmation_code')
+        model = User
+
+    def validate(self, data):
+        current_user = get_object_or_404(User, username=data['username'])
+        if data['confirmation_code'] != current_user.password:
+            raise validators.ValidationError(
+                'Confirmation code is not correct!'
+            )
 
 
 class CategorySerializer(serializers.ModelSerializer):
