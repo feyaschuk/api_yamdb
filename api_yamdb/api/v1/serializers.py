@@ -132,12 +132,12 @@ class TitleSerializer(serializers.ModelSerializer):
         required=False
     )
 
-    # def validate(self, year):
-    #     if year > datetime.now().year or year < 1000:
-    #         raise ValidationError(
-    #             ('Укажите 4-х значиный год, не больше текущего года'),
-    #             params={'year': year},
-    #     )
+    def validate(self, year):
+        if year > datetime.now().year or year < 1000:
+            raise ValidationError(
+                ('Укажите 4-х значиный год, не больше текущего года'),
+                params={'year': year},
+        )
 
 
     def get_rating(self, obj):

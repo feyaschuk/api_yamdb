@@ -11,8 +11,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title, User
 
 from .filters import TitleFilter
-from .permissions import (CustomIsAuthenticated, IsSuperUser, IsAdmin,
-                          IsOwner, IsModerator, IsSafeMethod)
+from .permissions import (IsSuperUser, IsAdmin, IsOwner, IsModerator,
+                          IsSafeMethod, CustomIsAuthenticated)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReviewSerializer, SignUpSerializer, TitleSerializer,
@@ -27,7 +27,11 @@ class DestroyListCreate(mixins.DestroyModelMixin,
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    permission_classes = [(CustomIsAuthenticated & (IsAdmin | IsOwner | IsModerator | IsSuperUser)) | IsSafeMethod]
+    permission_classes = [
+        CustomIsAuthenticated
+        & (IsOwner | IsModerator | IsAdmin | IsSuperUser)
+        | IsSafeMethod,
+    ]
     serializer_class = ReviewSerializer
     pagination_class = PageNumberPagination
 
@@ -42,7 +46,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = [(CustomIsAuthenticated & (IsAdmin | IsOwner | IsModerator | IsSuperUser)) | IsSafeMethod]
+    permission_classes = [
+        CustomIsAuthenticated
+        & (IsOwner | IsModerator | IsAdmin | IsSuperUser)
+        | IsSafeMethod,
+    ]
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 
@@ -57,7 +65,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    permission_classes = [(CustomIsAuthenticated & (IsAdmin | IsSuperUser)) | IsSafeMethod]
+    permission_classes = [
+        CustomIsAuthenticated & (IsAdmin | IsSuperUser) | IsSafeMethod
+    ]
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
     queryset = Title.objects.all()
@@ -69,7 +79,9 @@ class CategoryViewSet(DestroyListCreate):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = [(CustomIsAuthenticated & (IsAdmin | IsSuperUser)) | IsSafeMethod]
+    permission_classes = [
+        CustomIsAuthenticated & (IsAdmin | IsSuperUser) | IsSafeMethod
+    ]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -78,7 +90,9 @@ class GenreViewSet(DestroyListCreate):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = [(CustomIsAuthenticated & (IsAdmin | IsSuperUser)) | IsSafeMethod]
+    permission_classes = [
+        CustomIsAuthenticated & (IsAdmin | IsSuperUser) | IsSafeMethod
+    ]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
