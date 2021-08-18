@@ -149,14 +149,14 @@ class TitleSerializer(serializers.ModelSerializer):
             return None
         return rating['score__avg']
 
-    def validate(self, value):
-        now_year = datetime.now().year
-        if value in range(1000, now_year + 1):
-            return value
-        else:
-            raise serializers.ValidationError(
-                f"Введите 4-х значный год, но небольше текущего"
-            )
+    # def validate(self, value):
+    #     now_year = datetime.now().year
+    #     if value in range(1000, now_year + 1):
+    #         return value
+    #     else:
+    #         raise serializers.ValidationError(
+    #             f"Введите 4-х значный год, но небольше текущего"
+    #         )
 
     class Meta:
         fields = ('id', 'name', 'year', 'rating',

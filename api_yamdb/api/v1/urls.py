@@ -16,12 +16,15 @@ router_v1.register(
 router_v1.register('users/?', CustomUserViewSet, basename='users')
 router_v1.register('genres/?', GenreViewSet, basename='genres')
 router_v1.register('categories/?', CategoryViewSet, basename='categories')
+auth_path = [
+    path('signup/', create_new_user, name='create_new_user'),
+    path('token/', create_access_token, name='create_access_token')
+]
 
 
 urlpatterns = [
 
-    path('auth/signup/', create_new_user, name='create_new_user'),
-    path('auth/token/', create_access_token, name='create_access_token'),
+    path('auth/', include(auth_path)),
     path('', include(router_v1.urls)),
 
 ]
