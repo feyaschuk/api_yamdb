@@ -17,8 +17,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('author', 'title')
-        extra_kwargs = {'title': {'required': False}}
-        
+                
     def create(self, validated_data):        
         title = validated_data.pop('title_id')        
         if Review.objects.filter(
