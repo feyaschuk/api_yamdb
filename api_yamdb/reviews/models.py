@@ -39,10 +39,16 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=200,
-                            help_text='Укажите название категории')
-    slug = models.SlugField(max_length=150, unique=True,
-                            verbose_name='Идентификатор категории',)
+    name = models.CharField(
+        max_length=200,
+        help_text='Укажите название категории',
+        verbose_name='Название категории'
+    )
+    slug = models.SlugField(
+        max_length=150,
+        unique=True,
+        verbose_name='Идентификатор категории',
+    )
 
     class Meta:
         ordering = ('name',)
@@ -53,9 +59,18 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=200, help_text='Укажите жанр')
-    slug = models.SlugField(max_length=150, unique=True, blank=True, null=True,
-                            verbose_name='Идентификатор жанра',)
+    name = models.CharField(
+        max_length=200,
+        help_text='Укажите жанр',
+        verbose_name='Название жанра'
+    )
+    slug = models.SlugField(
+        max_length=150,
+        unique=True,
+        blank=True,
+        null=True,
+        verbose_name='Идентификатор жанра',
+    )
 
     class Meta:
         ordering = ('name',)
@@ -66,14 +81,19 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=200,)
-    year = models.PositiveSmallIntegerField(verbose_name='Год выпуска')
-    year = models.PositiveSmallIntegerField(verbose_name='Год выпуска',
-                                            validators=[
-                                                        MaxValueValidator(dt.datetime.now().year,
-                                                              'Год не может быть больше текущего')
-                                                       ]
-                                            )
+    name = models.CharField(
+        max_length=200,
+        verbose_name='Название произведения'
+    )
+    year = models.PositiveSmallIntegerField(
+        verbose_name='Год выпуска',
+        validators=[
+            MaxValueValidator(
+                dt.datetime.now().year,
+                'Год не может быть больше текущего'
+            )
+        ]
+    )
     description = models.CharField(max_length=200, blank=True, null=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,

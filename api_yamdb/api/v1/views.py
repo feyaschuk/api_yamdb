@@ -19,7 +19,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           UserMeSerializer, TokenCreateSerializer)
 
 
-class DestroyListCreate(mixins.DestroyModelMixin,
+class DestroyListCreateViewSet(mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
