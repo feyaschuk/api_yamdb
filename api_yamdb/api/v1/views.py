@@ -19,7 +19,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           UserMeSerializer)
 
 
-class MixinsViewSet(mixins.DestroyModelMixin,
+class DestroyListCreate(mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
@@ -71,7 +71,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
 
-class CategoryViewSet(MixinsViewSet):
+class CategoryViewSet(DestroyListCreate):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
@@ -80,7 +80,7 @@ class CategoryViewSet(MixinsViewSet):
     lookup_field = 'slug'
 
 
-class GenreViewSet(MixinsViewSet):
+class GenreViewSet(DestroyListCreate):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = [filters.SearchFilter]
