@@ -1,5 +1,6 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
+from reviews.models import UserRoles
 
 class IsSafeMethod(BasePermission):
     def has_permission(self, request, view):
@@ -16,18 +17,18 @@ class IsOwner(BasePermission):
 
 class IsModerator(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role == 'moderator'
+        return request.user.role == UserRoles.MODERATOR
 
     def has_object_permission(self, request, view, obj):
-        return request.user.role == 'moderator'
+        return request.user.role == UserRoles.MODERATOR
 
 
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role == 'admin'
+        return request.user.role == UserRoles.ADMIN
 
     def has_object_permission(self, request, view, obj):
-        return request.user.role == 'admin'
+        return request.user.role == UserRoles.ADMIN
 
 
 class IsSuperUser(BasePermission):
