@@ -21,13 +21,13 @@ class ReviewSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         title = validated_data.pop('title_id')
         if Review.objects.filter(
-            author=self.context['request'].user,
-            title_id=title
+                author=self.context['request'].user,
+                title_id=title
         ).exists():
             raise serializers.ValidationError(
                 "You can send only one review for one title.")
 
-        return Review.objects.create(title_id=title, ** validated_data)
+        return Review.objects.create(title_id=title, **validated_data)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -143,16 +143,15 @@ class TitleSerializer(serializers.ModelSerializer):
         required=False
     )
 
-
     def get_rating(self, obj):
         rating = Review.objects.filter(title=obj.id).aggregate(Avg('score'))
         if rating['score__avg'] is None:
             return None
         return rating['score__avg']
-    
+
     def validate(self, value):
         now_year = datetime.now().year
-        if value in range(1000, now_year+1):
+        if value in range(1000, now_year + 1):
             return value
         else:
             raise serializers.ValidationError(
