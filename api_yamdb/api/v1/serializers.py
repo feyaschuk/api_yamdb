@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.db.models.aggregates import Avg
 from rest_framework import serializers, validators
@@ -15,6 +17,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('author', 'title')
+
+    def create(self, validated_data):
+        title = validated_data.pop('title_id')
+        if Review.objects.filter(
+            author=self.context['request'].user,
+            title_id=title
+        ).exists():
+            raise serializers.ValidationError(
+                "You can send only one review for one title.")
+
+        return Review.objects.create(title_id=title, ** validated_data)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -87,32 +100,28 @@ class GenreSerializer(serializers.ModelSerializer):
         }
 
 
-class RepresentCategory(serializers.SlugRelatedField):
-    def to_representation(self, obj):
-        serializer = CategorySerializer(obj)
-        return serializer.data
-
-
-class RepresentGenre(serializers.SlugRelatedField):
-    def to_representation(self, obj):
-        serializer = GenreSerializer(obj)
-        return serializer.data
-
-
 class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
-    category = RepresentCategory(
+    category = SlugRelatedField(
         slug_field='slug',
         queryset=Category.objects.all(),
         required=False
     )
-    genre = RepresentGenre(
+    genre = SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(),
         many=True,
         required=False
     )
+
+    def validate(self, year):
+        if year > datetime.now().year or year < 1000:
+            raise ValidationError(
+                ('Укажите 4-х значиный год, не больше текущего года'),
+                params={'year': year},
+        )
+
 
     def get_rating(self, obj):
         rating = Review.objects.filter(title=obj.id).aggregate(Avg('score'))

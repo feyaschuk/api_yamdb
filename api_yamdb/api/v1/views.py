@@ -1,12 +1,11 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, serializers, status, viewsets
+from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-
 from reviews.models import Category, Genre, Review, Title, User
 
 from .filters import TitleFilter
@@ -20,7 +19,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           UserMeSerializer)
 
 
-class MixinsViewSet(mixins.DestroyModelMixin,
+class DestroyListCreate(mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
@@ -37,19 +36,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs.get("titles_id"))
-        if Review.objects.filter(
-                author=self.request.user,
-                title_id=title.id
-        ).exists():
-            raise serializers.ValidationError(
-                'You can send only one review for one title.'
-            )
         return serializer.save(author=self.request.user, title_id=title.id)
 
     def get_queryset(self):
         title_id = self.kwargs.get('titles_id')
         title = get_object_or_404(Title, id=title_id)
-        return Review.objects.filter(title=title)
+        return title.reviews_title.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -65,8 +57,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         return serializer.save(author=self.request.user, review=review)
 
     def get_queryset(self):
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, id=review_id)
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        review = title.reviews_title.get(id=self.kwargs.get('review_id'))
         return review.comments.all()
 
 
@@ -79,7 +71,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
 
-class CategoryViewSet(MixinsViewSet):
+class CategoryViewSet(DestroyListCreate):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
@@ -88,7 +80,7 @@ class CategoryViewSet(MixinsViewSet):
     lookup_field = 'slug'
 
 
-class GenreViewSet(MixinsViewSet):
+class GenreViewSet(DestroyListCreate):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = [filters.SearchFilter]
