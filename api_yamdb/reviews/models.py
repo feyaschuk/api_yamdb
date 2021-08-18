@@ -54,12 +54,12 @@ class Genre(models.Model):
 class Title(models.Model):
     name = models.CharField(max_length=200,)
     year = models.PositiveSmallIntegerField(verbose_name='Год выпуска')
-    # year = models.PositiveSmallIntegerField(verbose_name='Год выпуска',
-    #                                        validators=[
-    #                                                    MaxValueValidator(dt.datetime.now().year,
-    #                                                          'Год не может быть больше текущего')
-    #                                                   ]
-    #                                        )
+    year = models.PositiveSmallIntegerField(verbose_name='Год выпуска',
+                                            validators=[
+                                                        MaxValueValidator(dt.datetime.now().year,
+                                                              'Год не может быть больше текущего')
+                                                       ]
+                                            )
     description = models.CharField(max_length=200, blank=True, null=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
