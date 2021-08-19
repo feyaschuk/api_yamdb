@@ -5,11 +5,11 @@ from reviews.models import Title
 
 
 class TitleFilter(FilterSet):
-    name = filters.CharFilter(field_name='name', lookup_expr='icontains')
-    year = filters.NumberFilter(field_name='year')
-    genre = filters.CharFilter(field_name='genre__slug')
-    category = filters.CharFilter(field_name='category__slug')
+    name = filters.CharFilter(field_name="name", lookup_expr="icontains")
+    year = filters.NumberFilter(field_name="year")
+    genre = filters.CharFilter(field_name="genre__slug")
+    category = filters.CharFilter(field_name="category__slug")
 
     class Meta:
         model = Title
-        fields = ['name', 'genre', 'category', 'year']
+        fields = ["name", "genre", "category", "year"]
