@@ -12,25 +12,12 @@ from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title, User
 
 from .filters import TitleFilter
-from .permissions import (
-    CustomIsAuthenticated,
-    IsAdmin,
-    IsModerator,
-    IsOwner,
-    IsSafeMethod,
-    IsSuperUser,
-)
-from .serializers import (
-    CategorySerializer,
-    CommentSerializer,
-    CustomUserSerializer,
-    GenreSerializer,
-    ReviewSerializer,
-    SignUpSerializer,
-    TitleSerializer,
-    TokenCreateSerializer,
-    UserMeSerializer,
-)
+from .permissions import (CustomIsAuthenticated, IsAdmin, IsModerator, IsOwner,
+                          IsSafeMethod, IsSuperUser)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          CustomUserSerializer, GenreSerializer,
+                          ReviewSerializer, SignUpSerializer, TitleSerializer,
+                          TokenCreateSerializer, UserMeSerializer)
 
 
 class DestroyListCreateViewSet(
